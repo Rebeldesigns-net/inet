@@ -676,10 +676,32 @@ class INET_API Chunk : public cObject,
     }
 
     /**
+     * Maps all tags in the provided range to to the function.
+     */
+    template<typename T> void mapAllTags(b offset, b length, std::function<void (b, b, const T*)> f) const {
+        return tags.mapAllTags<const T>(offset, length == b(-1) ? getChunkLength() - offset : length, f);
+    }
+
+    /**
+     * Maps all tags in the provided range to to the function.
+     */
+    template<typename T> void mapAllTags(b offset, b length, std::function<void (b, b, T*)> f) {
+        return tags.mapAllTags<T>(offset, length == b(-1) ? getChunkLength() - offset : length, f);
+    }
+
+    /**
      * Returns all chunk tags for the provided type and range in a detached vector of region tags.
      */
     template<typename T> std::vector<RegionTagSet::RegionTag<const T>> getAllTags(b offset = b(0), b length = b(-1)) const {
         return tags.getAllTags<const T>(offset, length == b(-1) ? getChunkLength() - offset : length);
+    }
+
+    /**
+     * Returns all chunk tags for the provided type and range in a detached vector of region tags.
+     */
+    template<typename T> std::vector<RegionTagSet::RegionTag<T>> getAllTags(b offset = b(0), b length = b(-1)) {
+        checkMutable();
+        return tags.getAllTags<T>(offset, length == b(-1) ? getChunkLength() - offset : length);
     }
 
     /**
@@ -696,6 +718,14 @@ class INET_API Chunk : public cObject,
     template<typename T> T *addTagIfAbsent(b offset = b(0), b length = b(-1)) {
         checkMutable();
         return tags.addTagIfAbsent<T>(offset, length == b(-1) ? getChunkLength() - offset : length);
+    }
+
+    /**
+     * Returns the newly added chunk tags for the provided type and range where the tag is absent.
+     */
+    template<typename T> std::vector<RegionTagSet::RegionTag<T>> addTagsWhereAbsent(b offset = b(0), b length = b(-1)) {
+        checkMutable();
+        return tags.addTagsWhereAbsent<T>(offset, length == b(-1) ? getChunkLength() - offset : length);
     }
 
     /**
@@ -717,9 +747,9 @@ class INET_API Chunk : public cObject,
     /**
      * Removes and returns all chunk tags for the provided type and range.
      */
-    template <typename T> std::vector<RegionTagSet::RegionTag<T>> removeAllTags(b offset, b length) {
+    template <typename T> std::vector<RegionTagSet::RegionTag<T>> removeTagsWherePresent(b offset, b length) {
         checkMutable();
-        return tags.removeAllTags<T>(offset, length == b(-1) ? getChunkLength() - offset : length);
+        return tags.removeTagsWherePresent<T>(offset, length == b(-1) ? getChunkLength() - offset : length);
     }
     //@}
 

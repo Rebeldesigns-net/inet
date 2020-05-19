@@ -23,8 +23,8 @@ import inet.visualizer.contract.IPacketFlowVisualizer;
 simple PacketFlowOsgVisualizer extends PathVisualizerBase like IPacketFlowVisualizer
 {
     parameters:
-		startPathSignal = default("packetFlowEntered");
-		endPathSignal = default("packetFlowExited");
+        startPathSignal = default("packetFlowStarted");
+        endPathSignal = default("packetFlowExited");
         labelFormat = default("%L %p pk (%l)");
         lineStyle = default("dashed");
         fadeOutTime = default(0s);

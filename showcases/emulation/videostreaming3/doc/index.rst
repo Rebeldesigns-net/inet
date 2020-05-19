@@ -5,7 +5,9 @@ Goals
 -----
 
 In this showcase, we'll use real applications which communicate over a simulated network.
-This feature is useful for testing how real applications work over the network, without having to set up a physical network. The simulated network can be easily configured for various topologies and behaviors to test a variety of cases.
+This feature is useful for testing how applications work over the network, without having to set up a physical network. The simulated network can be easily configured for various topologies and behaviors to test a variety of cases.
+
+.. **TODO** reduce redundancy -> too many real applications
 
 We'll use INET's emulation feature to interface the real world (the host OS environment) with the simulation.
 INET has various modules which facilitate this interfacing, you can read about them in the :doc:`Emulation section </showcases/emulation/index>` of the showcases page.
@@ -21,7 +23,9 @@ Note that this showcase requires the ``Emulation`` feature of the INET Framework
 The Model
 ---------
 
-The simulation scenario is illustrated with the following theoretical schematic:
+The simulation scenario is illustrated with the following diagram:
+
+.. **TODO** theoretical -> max utolag megmagyaraz -> ehhez kepest picit máshogy néz ki
 
 .. **TODO** meaning that this is the logical overview of the setup; which parts are simulated which are real and how they are interfaced is another layer on top of this; there are multiple ways to do that, e.g. at the link layer, or transport layer, etc. Actually, this layer is another layer on this schematic as well (blue).
 
@@ -48,7 +52,7 @@ The simulation scenario is illustrated with the following theoretical schematic:
 
 In this scenario, a VLC instance in a sender host streams a video file to another VLC instance in a receiver host over the network. The hosts from the link-layer up are real; parts of the link-layer, as well as the physical layer and the network are simulated.
 
-We'll use the :ned:`ExtUpperEthernet` interface to connect the real and simulated parts of scenario.
+We'll use the :ned:`ExtUpperEthernet` interface to connect the real and simulated parts of the scenario.
 The lower part of this interface is present in the simulation, and uses TAP interfaces in the host OS to send and receive packets to and from the upper layers of the host OS.
 
 .. **V2.2** The lower part of this interface is present in the simulation, and uses TAP interfaces in the host os to connect the host os and the simulation.
@@ -59,7 +63,7 @@ Note that the real and simulated parts can be separated at other levels of the p
 
 .. **V1** Note that the in reality, the real parts of the sender and receiver hosts are the same machine, as both use the protocol stack of the host OS:
 
-In reality, the real parts of the sender and receiver hosts are the same machine, as both use the protocol stack of the host OS (even though in this scenario logically they are different hosts):
+In fact, the real parts of the sender and receiver hosts are running on the same machine, as both use the protocol stack of the host OS (even though in this scenario logically they are different hosts):
 
 .. **TODO** schematic
 
@@ -69,7 +73,7 @@ In reality, the real parts of the sender and receiver hosts are the same machine
 
 .. **TODO** even though logically they are different hosts (they can actaully be on different machines TODO) -> not needed
 
-We'll use a VLC instance in the sender host to stream a video file. The packets created by VLC travel down the host os protocol stack and enter the simulation at the Ethernet interface. Then they traverse the simulated network, enter the receiver host's Ethernet interface, and are injected into the host os protocol stack, and travel up to another VLC instance which plays the video.
+We'll use a VLC instance in the sender host to stream a video file. The packets created by VLC go down the host OS protocol stack and enter the simulation at the Ethernet interface. Then they traverse the simulated network, enter the receiver host's Ethernet interface, and are injected into the host OS protocol stack, and go up to another VLC instance which plays the video.
 
 The network for the simulation is the following:
 
@@ -99,7 +103,7 @@ It contains two :ned:`StandardHost`'s. Each host is connected by an :ned:`EtherS
 The sender VLC application will stream the video to the address of the router's ``eth0`` in the simulation.
 The router will perform network address translation to rewrite the destination address to the address of the receiver host's EXT/TAP interface.
 
-This is required so that the video packets enter the simulated network; if they were sent to the receiver host's EXT/TAP interface, they would go through the loopback interface.
+This is required so that the video packets actually enter the simulated network; if they were sent to the receiver host's EXT/TAP interface, they would go through the loopback interface because the host OS optimizes traffic.
 
 .. **V2** This is required so that the video packets enter the simulation, instead of going through the loopback interface.
 
@@ -163,7 +167,7 @@ The addresses in the network are important; the configurator is set to assign th
    :start-at: configurator
    :end-at: /config
 
-Also, the CRC and FCS need to be set to ``computed`` to properly serialize/deserialize packets.
+Also, the CRC and FCS need to be set to ``computed`` to be able to properly serialize/deserialize packets.
 
 .. Also, the CRC and FCS need to be set to ``computed`` to properly serialize/deserialize packets./in ethernet/udp/and other protocols like ipv4? **TODO**
 
@@ -230,7 +234,9 @@ To start the simulation and the VLC instances, run the ``run.sh`` script:
 The script starts the simulation in Cmdenv; the streaming VLC client is also started in command line mode. The received video stream is played by the other VLC instance. The received video is lower quality than the original video file,
 because it's downscaled, and the bitrate is reduced, so that the playback is smooth.
 
-.. note:: Emulating the network is CPU-intensive. The downscaling and bitrate settings were to chosen to lead to smooth playback on the PC we tested the showcase on. However, it might be able to work in higher quality on a faster machine; the user can experiment with different encoding settings for the VLC streaming instance by editing them in the run script.
+.. note:: Emulating the network is CPU-intensive. The downscaling and bitrate settings were chosen to lead to smooth playback on the PC we tested the showcase on. However, it might be able to work in higher quality on a faster machine; the user can experiment with different encoding settings for the VLC streaming instance by editing them in the run script.
+
+**TODO** should be shorter
 
 .. TODO wireshark
 

@@ -206,6 +206,7 @@ module EtherQEncapModularized like IEtherEncap
             @display("p=492,609");
         }
         addressChecker: EthernetAddressChecker {
+            promiscuous = true;
             @display("p=492,509");
         }
         stagChecker: <default("OmittedIeee8021qTagger")> like IIeee8021qTagger {

@@ -170,6 +170,86 @@ module EtherEncapModularized like IEtherEncap
         llcSocketPacketProcessor.socketOut --> m2.in++;
 }
 
+module EtherQEncapModularized like IEtherEncap
+{
+    gates:
+        input upperLayerIn @labels(Ieee802Ctrl/down); // higher layer
+        output upperLayerOut @labels(Ieee802Ctrl/up); // higher layer
+        input lowerLayerIn @labels(EtherFrame);   // to Ethernet MAC
+        output lowerLayerOut @labels(EtherFrame); // to Ethernet MAC
+    submodules:
+        fcsDropper: EthernetFcsDropper {
+            @display("p=200,109");
+        }
+        addressremover: EthernetAddressChecker {
+            indication = false;
+            promiscuous = true;
+            @display("p=200,209");
+        }
+        ctagInserter: <default("OmittedIeee8021qTagger")> like IIeee8021qTagger {
+            vlanTagType = "c";
+            @display("p=200,309");
+        }
+        stagInserter: <default("OmittedIeee8021qTagger")> like IIeee8021qTagger {
+            vlanTagType = "s";
+            @display("p=200,409");
+        }
+        addressInserter: EthernetAddressInserter {
+            @display("p=200,509");
+        }
+        fcsInserter: EthernetFcsInserter {
+            parameters:
+                @display("p=200,609");
+        }
+
+        fcsChecker: <default("EthernetFcsChecker2")> like IPacketFilter {
+            @display("p=492,609");
+        }
+        addressChecker: EthernetAddressChecker {
+            @display("p=492,509");
+        }
+        stagChecker: <default("OmittedIeee8021qTagger")> like IIeee8021qTagger {
+            vlanTagType = "s";
+            @display("p=492,409");
+        }
+        ctagChecker: <default("OmittedIeee8021qTagger")> like IIeee8021qTagger {
+            vlanTagType = "c";
+            @display("p=492,309");
+        }
+        addressReInserter: EthernetAddressInserter {
+            request = false;
+            @display("p=492,109");
+        }
+
+        packetTrimmer: PacketTrimmer {
+            @display("p=492,209");
+        }
+        packetSerializer: PacketSerializer {
+            @display("p=633,109");
+        }
+        packetTrimmer1: PacketTrimmer {
+            @display("p=88,470");
+        }
+    connections:
+        upperLayerIn --> { @display("m=n"); } --> fcsDropper.in;
+        fcsDropper.out --> addressremover.in;
+        addressremover.out --> ctagInserter.in;
+        ctagInserter.out --> stagInserter.in;
+        stagInserter.out --> packetTrimmer1.in;
+        addressInserter.out --> fcsInserter.in;
+        fcsInserter.out --> { @display("m=s"); } --> lowerLayerOut;
+
+        lowerLayerIn --> { @display("m=s"); } --> fcsChecker.in;
+        fcsChecker.out --> addressChecker.in;
+        addressChecker.out --> stagChecker.in;
+        stagChecker.out --> ctagChecker.in;
+        ctagChecker.out --> packetTrimmer.in;
+        packetSerializer.out --> { @display("m=n"); } --> upperLayerOut;
+        packetTrimmer.out --> addressReInserter.in;
+        addressReInserter.out --> packetSerializer.in;
+        packetTrimmer1.out --> addressInserter.in;
+}
+
 module EthFakeMac
 {
     parameters:

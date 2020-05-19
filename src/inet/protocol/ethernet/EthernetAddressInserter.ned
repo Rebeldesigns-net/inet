@@ -24,4 +24,6 @@ simple EthernetAddressInserter extends PacketFlowBase
     parameters:
         @class(EthernetAddressInserter);
         @display("i=block/inserter");
+        bool request = default(true);
 }
+

@@ -18,9 +18,12 @@
 package inet.protocol.ethernet;
 
 import inet.queueing.base.PacketFilterBase;
+import inet.queueing.contract.IPacketFilter;
 
-simple EthernetFcsChecker2 extends PacketFilterBase
+
+simple EthernetFcsChecker2 extends PacketFilterBase like IPacketFilter
 {
     parameters:
         @class(EthernetFcsChecker2);
 }
+
